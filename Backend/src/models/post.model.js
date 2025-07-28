@@ -4,7 +4,8 @@ const postSchema = new mongoose.Schema(
     {
         userId: String,
         imageUrl: String,
-        imageId: String
+        imageId: String,
+        caption: String
     },
     { 
         timestamps: true 
