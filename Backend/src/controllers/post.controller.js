@@ -41,7 +41,7 @@ async function allPost(req,res){
     });
 }
 
-async function generateCaption(req,res){
+async function createCaption(req,res){
     const token = req.cookies.user
 
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
@@ -64,6 +64,6 @@ async function generateCaption(req,res){
 module.exports = {
     uploadPost,
     allPost,
-    generateCaption
+    createCaption
 }
 

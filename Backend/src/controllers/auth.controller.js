@@ -2,17 +2,25 @@ const User = require("../models/user.model")
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs')
 
+const cookieOptions = {
+    httpOnly: true,
+    secure: false, // set to true in production with HTTPS
+    sameSite: "Lax", // or "None" with secure: true if cross-site
+    maxAge: 1000 * 60 * 60 * 24, // 24 hours in milliseconds
+    path: "/",
+};
+
 async function registerUser(req,res){
     const {username, password} = req.body
 
     if(!username || !password) {
         return res
         .status(400)
-        .json({message: "Username and Password are required"})
+        .json({success: false,message: "Username and Password are required"})
     }
 
     const isUserExists = await User.findOne({ username })
-    if(isUserExists) return res.status(409).json({message: "Username already in use"})
+    if(isUserExists) return res.status(409).json({success: false,message: "Username already in use"})
 
     const user = await User.create({
         username, 
@@ -21,11 +29,14 @@ async function registerUser(req,res){
 
     const token = jwt.sign({id:user._id}, process.env.JWT_SECRET)
 
-    res.cookie("user",token)
+    res.cookie("user",token, cookieOptions)
+
+    const {password: _, ...userWithoutPassword} = user.toObject()
 
     res.status(201).json({
+        success: true,
         message: "User is successfully registered",
-        user
+        userWithoutPassword
     })
 }
 
@@ -33,19 +44,23 @@ async function loginUser(req,res){
     const {username, password} = req.body
 
     const isUserExists = await User.findOne({username})
-    if(!isUserExists) return res.status(400).json({message:"User not found"})
+    if(!isUserExists) return res.status(400).json({ success:false,message:"User not found"})
     
     const isPasswordValid = await bcrypt.compare(password,isUserExists.password)
-    if(!isPasswordValid) return res.status(400).json({message:"Password is invalid.!"})
+    if(!isPasswordValid) return res.status(400).json({success:false,message:"Password is invalid.!"})
 
     const token = jwt.sign({id:isUserExists._id},process.env.JWT_SECRET)
 
-    res.cookie("user",token)
+    res.cookie("user",token, cookieOptions)
+    
+    const {password: _, ...userWithoutPassword} = isUserExists.toObject()
 
     return res
     .status(200)
     .json({
+        success: true,
         message: `${isUserExists.username} is successfully logined.!`,
+        user: userWithoutPassword
     })
 }
 
@@ -59,16 +74,20 @@ async function currentUser(req,res){
         const user = await User.findById({_id:decodedToken.id})
         if(!user) return res.status(400).json({message:"User not found"})
 
+        const {password: _, ...userWithoutPassword} = user.toObject()
+
         return res
         .status(200)
         .json({
+            success: true,
             message: "User details :-",
-            user
+            user: userWithoutPassword
         })
     } catch (error) {
         return res
         .status(400)
         .json({
+            success:false,
             message: "Unauthorized token"
         })
     }
@@ -80,6 +99,7 @@ async function logoutUser(req,res){
     res
     .status(200)
     .json({
+        success: true,
         message: "User logout successfully"
     })
 }
