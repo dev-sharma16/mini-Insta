@@ -1,8 +1,9 @@
 import axios from '../axios';
-import React from 'react';
+import React, {useState, useEffect}from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../store/authSlice'
+import PostCard from '../components/PostCard';
 
 function User() {
   const user = useSelector((state) => state.auth.user);
@@ -15,6 +16,31 @@ function User() {
     navigate("/login")
   }
 
+  const postHandler = async()=>{
+    navigate("/upload")
+  }
+  const [posts, setPosts] = useState([])
+  const [loading, setLoading] = useState(false)
+
+  useEffect(()=>{
+    const fetchPost = async()=>{
+      try {
+        setLoading(true)
+        const response = await axios.get("/post/user-posts")
+        const postsData = response.data
+        const posts = postsData?.data
+        console.log(postsData);
+        console.log(posts);
+        setPosts(posts)
+      } catch (error) {
+        console.error('cant fetch post :',error);
+      } finally {
+        setLoading(false)
+      }
+    } 
+    fetchPost()
+  },[])
+
   return (
     <div className="text-white text-center mt-10">
       {user ? (
@@ -26,6 +52,30 @@ function User() {
           >
             LogOut
           </button>
+          <button 
+            onClick={postHandler} 
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mt-15 ml-10"
+          >
+            Create Post
+          </button>
+          <div className='mt-15 px-5 sm:px-15'>
+            <h1 className="text-2xl font-bold mb-6">Latest Posts</h1>
+            {loading ? (
+              <p>Loading posts...</p>
+            ) : posts?.length === 0 ? (
+              <p>No posts yet.</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {posts.map((post) => (
+                  <PostCard
+                    key={post._id}
+                    image={post.imageUrl}
+                    caption={post.caption}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </>
       ) : (
         <div>

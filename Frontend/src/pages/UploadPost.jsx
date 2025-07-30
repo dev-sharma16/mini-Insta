@@ -1,8 +1,11 @@
 import React from 'react'
+import UploadPostForm from '../components/UploadPostForm'
 
 function UploadPost() {
   return (
-    <div>UploadPost</div>
+    <div className='text-white mt-20'>
+      <UploadPostForm/>
+    </div>
   )
 }
 
