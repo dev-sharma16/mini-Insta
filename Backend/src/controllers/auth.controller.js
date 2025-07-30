@@ -65,32 +65,15 @@ async function loginUser(req,res){
 }
 
 async function currentUser(req,res){
-    const currentToken = req.cookies.user
-    if(!currentToken) return res.status(400).json({message: "Unauthorized access"})
+    const user = req.user
 
-    try {
-        const decodedToken = jwt.verify(currentToken,process.env.JWT_SECRET);
-
-        const user = await User.findById({_id:decodedToken.id})
-        if(!user) return res.status(400).json({message:"User not found"})
-
-        const {password: _, ...userWithoutPassword} = user.toObject()
-
-        return res
-        .status(200)
-        .json({
-            success: true,
-            message: "User details :-",
-            user: userWithoutPassword
-        })
-    } catch (error) {
-        return res
-        .status(400)
-        .json({
-            success:false,
-            message: "Unauthorized token"
-        })
-    }
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "User details :-",
+        user
+    })
 }
 
 async function logoutUser(req,res){
