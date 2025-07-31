@@ -69,7 +69,7 @@ function UploadPostForm({ onSubmit, onGenerateCaption }) {
                 setSelectedFile(null);
                 setCaptions(null);
                 console.log("Post uploaded..!");
-                navigate("/home")
+                navigate("/")
             } else {
                 console.log("Cant upload , try Again..!");
             }
