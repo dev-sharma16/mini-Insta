@@ -16,9 +16,18 @@ function User() {
     navigate("/login")
   }
 
-  const postHandler = async()=>{
+  const postHandler = ()=>{
     navigate("/upload")
   }
+
+  const changePasswordHandler = ()=>{
+    navigate("/user/change-password")
+  }
+
+  const updatePostHandler = (postId)=>{
+    navigate(`/user/post/${postId}`)
+  }
+
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(false)
 
@@ -48,7 +57,7 @@ function User() {
           <h1 className="text-2xl font-semibold">Hi, {user.username} 👋</h1>
           <button 
             onClick={logoutHandler} 
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mt-15"
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition mt-15"
           >
             LogOut
           </button>
@@ -57,6 +66,12 @@ function User() {
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mt-15 ml-10"
           >
             Create Post
+          </button>
+          <button 
+            onClick={changePasswordHandler} 
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mt-15 ml-10"
+          >
+            Change Password
           </button>
           <div className='mt-15 px-5 sm:px-15'>
             <h1 className="text-2xl font-bold mb-6">Latest Posts</h1>
@@ -71,6 +86,7 @@ function User() {
                     key={post._id}
                     image={post.imageUrl}
                     caption={post.caption}
+                    onTap={()=>{updatePostHandler(post._id)}}
                   />
                 ))}
               </div>

@@ -1,8 +1,8 @@
 import React from 'react';
 
-function PostCard({ image, caption }) {
+function PostCard({ image, caption, onTap }) {
     return (
-        <div className="max-w-sm mx-auto rounded-lg overflow-hidden shadow-md border border-gray-200 bg-white">
+        <div onClick={onTap} className="max-w-sm mx-auto rounded-lg overflow-hidden shadow-md border border-gray-200 bg-white">
             <div className="aspect-square w-full">
                 <img
                     src={image}
