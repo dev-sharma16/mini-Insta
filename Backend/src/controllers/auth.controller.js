@@ -87,9 +87,29 @@ async function logoutUser(req,res){
     })
 }
 
+async function changePassword(req,res){
+    const userId = req.user.id
+    const {oldPassword, newPassword} = req.body
+
+    const user = await User.findById({_id:userId})
+    
+    const isPasswordValid = await bcrypt.compare(oldPassword,user.password)
+    if(!isPasswordValid) return res.status(400).json({success: false, message: "Invalid old password"})
+
+    const newPasswordToSave = await bcrypt.hash(newPassword,10)
+    
+    await User.findByIdAndUpdate(userId,{ password: newPasswordToSave });
+
+    return res.status(200).json({
+        success: true,
+        message: "Password changed successfully..!"
+    })
+}
+
 module.exports = {
     registerUser,
     loginUser,
     currentUser,
-    logoutUser
+    logoutUser,
+    changePassword
 }
