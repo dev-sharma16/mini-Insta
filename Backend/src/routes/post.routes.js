@@ -1,6 +1,6 @@
 const express = require("express") 
 const multer = require('multer')
-const {uploadPost,allPosts,createCaption,userPosts} = require('../controllers/post.controller.js')
+const {uploadPost,allPosts,createCaption,userPosts,deletePost,postById,updateCaption} = require('../controllers/post.controller.js')
 const authMiddleware = require('../middleware/auth.middleware')
 
 const router = express.Router()
@@ -25,11 +25,28 @@ router.get(
     allPosts
 )
 
+router.get(
+    "/:id",
+    postById
+)
+
 router.post(
     '/generate-captions', 
     authMiddleware, 
     upload.single("image"), 
     createCaption
+)
+
+router.delete(
+    '/delete-post/:id', 
+    authMiddleware, 
+    deletePost
+)
+
+router.patch(
+    '/update-post/:id', 
+    authMiddleware, 
+    updateCaption
 )
 
 module.exports = router

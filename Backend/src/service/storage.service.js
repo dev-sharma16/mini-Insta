@@ -23,4 +23,16 @@ function uploadFile(file){
     })
 }
 
-module.exports = uploadFile;
+function deleteFile(fileId) {
+    return new Promise((resolve, reject) => {
+        imagekit.deleteFile(fileId, (error, result) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(result);
+            }
+        });
+    });
+}
+
+module.exports = { uploadFile, deleteFile };
